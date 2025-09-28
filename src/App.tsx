@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PreferencesProvider } from "./contexts/PreferencesContext";
 import { Layout } from "./components/Layout";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Home from "./pages/Home";
 import Favorites from "./pages/Favorites";
 import Settings from "./pages/Settings";
@@ -22,25 +23,27 @@ const queryClient = new QueryClient({
 });
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <PreferencesProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/favorites" element={<Favorites />} />
-              <Route path="/settings" element={<Settings />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Layout>
-        </BrowserRouter>
-      </TooltipProvider>
-    </PreferencesProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <PreferencesProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter basename={import.meta.env.PROD ? '/appsmith-next' : ''}>
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/favorites" element={<Favorites />} />
+                <Route path="/settings" element={<Settings />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Layout>
+          </BrowserRouter>
+        </TooltipProvider>
+      </PreferencesProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
