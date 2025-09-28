@@ -53,14 +53,16 @@ jobs:
 
       - name: Setup Pages configuration
         uses: actions/configure-pages@v4
+        id: pages
 
       - name: Build application
         env:
           # Set the TMDB API key from repository secrets
           VITE_TMDB_API_KEY: ${{ secrets.VITE_TMDB_API_KEY }}
           # Set the base path for GitHub Pages deployment
-          # This will be automatically set to /repository-name/
           NODE_ENV: production
+          # Use the base path from Pages configuration
+          VITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}
         run: |
           if [ -f "bun.lockb" ]; then
             echo "Building with Bun..."
