@@ -52,8 +52,18 @@ jobs:
           fi
 
       - name: Setup Pages configuration
-        uses: actions/configure-pages@v4
         id: pages
+        uses: actions/configure-pages@v4
+        continue-on-error: true
+
+      - name: Check Pages configuration
+        if: steps.pages.outcome == 'failure'
+        run: |
+          echo "⚠️  GitHub Pages is not enabled for this repository!"
+          echo "Please enable it by going to:"
+          echo "https://github.com/${{ github.repository }}/settings/pages"
+          echo "And set Source to 'GitHub Actions'"
+          exit 1
 
       - name: Build application
         env:
@@ -61,8 +71,8 @@ jobs:
           VITE_TMDB_API_KEY: ${{ secrets.VITE_TMDB_API_KEY }}
           # Set the base path for GitHub Pages deployment
           NODE_ENV: production
-          # Use the base path from Pages configuration
-          VITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          # Use repository name as base path for GitHub Pages
+          VITE_BASE_PATH: ${{ steps.pages.outputs.base_path || '/appsmith-next/' }}
         run: |
           if [ -f "bun.lockb" ]; then
             echo "Building with Bun..."
